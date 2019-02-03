@@ -29,7 +29,7 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
-def getSheet():
+def getSheet(range):
     #Scrapes information off of the quanatiative
     global mainList
     mainList = []
@@ -41,13 +41,17 @@ def getSheet():
     service = discovery.build('sheets', 'v4', http=http, discoveryServiceUrl=discoveryUrl)
 
     spreadsheetId = '1IlHW3GcPT71Q3_k11IFYebdZ7TnqAS6d9Fk7tp0LCcI' #Google Sheet ID
-    rangeName = 'B2:AB' #Range
+    rangeName = range #Range
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
     values = result.get('values', [])
 
     if not values:
         print('No data found.')
-        return('No data found.')
+        return(False)
     else:
         return(values)
+
+
+if __name__ == '__main__':
+    print(getSheet('B2:AB'))

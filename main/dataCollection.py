@@ -40,7 +40,7 @@ def getSheet(range):
                     'version=v4')
     service = discovery.build('sheets', 'v4', http=http, discoveryServiceUrl=discoveryUrl)
 
-    spreadsheetId = '1IlHW3GcPT71Q3_k11IFYebdZ7TnqAS6d9Fk7tp0LCcI' #Google Sheet ID
+    spreadsheetId = '1kAYCEN2Q-xS8boGmo0zLv8LbiHL_z9jgxtj_TpA1oP8' #Google Sheet ID
     rangeName = range #Range
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
@@ -54,4 +54,4 @@ def getSheet(range):
 
 
 if __name__ == '__main__':
-    print(getSheet('B2:AB'))
+    print(getSheet('B2:AC'))

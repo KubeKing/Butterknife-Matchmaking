@@ -6,26 +6,30 @@ import pandas as pd
 import numpy as np
 import operator
 
+QT = {
+'GI': 'What gender are you interested in? (Check all boxes that apply)', 
+'AR': 'What age range are you interested in? (Check all boxes that apply)',
+'STARTER': 'What would you rather eat?'}
 questions = data.getSheet('B1:AC1')[0]
 answers = data.getSheet('B2:AC')
 qlen = len(questions)
 alen = len(answers)
-df = pd.DataFrame(np.column_stack(answers),questions)
-db = {}
+df = pd.DataFrame(answers,columns=questions)
+df.set_index(['Email Address'])
 for i in range(alen):
-    df[i][5] = df[i][5].split(', ')
-    df[i][6] = df[i][6].split(', ')
+    df.loc[i][QT['GI']] = df.loc[i][QT['GI']].split(', ')
+    df.loc[i][QT['AR']] = df.loc[i][QT['AR']].split(', ')
 
 #------------------------------------------------------Functions----------------------------------
 def canMatch(p1, p2): #Checks Genders and Grades
-    if p1[3] in p2[5] and p2[3] in p1[5] and p1[2] in p2[6] and p2[2] in p1[6]:
+    if p1['Gender'] in p2[QT['GI']] and p2['Gender'] in p1[QT['GI']] and p1['Grade'] in p2[QT['AR']] and p2['Grade'] in p1[QT['AR']]:
         return(True)
     else:
         return(False)
 
 def similarity(p1, p2): #Compares questions
     similarity = 0
-    for i in range(7, qlen):
+    for i in range(questions.index(QT['STARTER']), qlen):
         if p1[i] == p2[i]:
             similarity += 1
     if canMatch(p1, p2):
@@ -41,22 +45,23 @@ def bestMatches(p1): #Finds the top 5 matches
     return(add)
 
 def createMatches(): #Finds all matches
+    df['All'], df['Best'] = [None]*(alen), [None]*(alen)
     for i in range(alen):
-        add = {'All': {}}
+        add = {}
         for n in range(alen):
             if n != i:
-                add['All'][df[n][1]] = similarity(df[n], df[i])
-        add['Best'], db[df[i][1]] = bestMatches(add['All']), add
+                add[df.loc[n]['Email Address']] = similarity(df.loc[n], df.loc[i])
+        df.loc[i]['All'] = add
+        df.loc[i]['Best'] = bestMatches(add)
 
 def sendResults():
     mail.connectSMPT()
-    for i in range(2):
-        src = df[i]
-        mail.sendResult(src, db[src[1]]['Best'])
+    for i in range(1):
+        mail.sendResult(df.loc[i], df)
     mail.disconnectSMPT()
 
 if __name__ == '__main__':
     createMatches()
     sendResults()
-    #print(db)
+    #print(df.shape)
     #print(df)

@@ -25,19 +25,17 @@ def read_template(filename):
         template_file_content = template_file.read()
     return Template(template_file_content)
 
-def sendResult(df, bestMatch):
-    to, name = df[0], df[1]
-    text_template = read_template('Butterknife-Matchmaking\main\\templates\messsage.txt')
-    html_template = read_template('Butterknife-Matchmaking\main\\templates\message.html')
+def sendResult(p1, df):
+    to, name = p1['Email Address'], p1['Name']
+    text_template = read_template('main\\templates\messsage.txt')
+    html_template = read_template('main\\templates\message.html')
     counter, matches = 0, {'text' : '', 'html': ''}
-    for key, val in bestMatch.items():
+    for key, val in p1['Best'].items():
         counter += 1
-        matches['text'] += (str(counter)+'. '+key+': '+str(val)+'%!\n')
-        matches['html'] += ('<li><a href=\"mailto:'+df[0]+'\" target=\"_top\">'+key+'</a>: '+str(val)+'%!</li>')
+        matches['text'] += (str(counter)+'. '+df.loc[df['Email Address'] == key]['Name']+': '+str(val)+'%!\n')
+        matches['html'] += ('<li><a href=\"mailto:'+key+'\" target=\"_top\">'+list(df.loc[df['Email Address'] == key]['Name'])[0]+'</a>: '+str(val)+'%!</li>')
     text = text_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['text'])
     html = html_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['html'])
-    print(text)
-
     #Attatch and Send
     msg = MIMEMultipart('alternative')
     msg['From']=EMAIL
@@ -45,5 +43,6 @@ def sendResult(df, bestMatch):
     msg['Subject']="Your Match Results are here!"
     msg.attach(MIMEText(text, 'plain'))
     msg.attach(MIMEText(html, 'html'))
+    print(str(msg))
     smtpObj.send_message(msg)
 

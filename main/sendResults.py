@@ -32,10 +32,12 @@ def sendResult(p1, df):
     counter, matches = 0, {'text' : '', 'html': ''}
     for key, val in p1['Best'].items():
         counter += 1
+        if counter == 1:
+            holder = list(df.loc[df['Email Address'] == key]['Snapchat and/or Instagram'])[0]
         matches['text'] += (str(counter)+'. '+df.loc[df['Email Address'] == key]['Name']+': '+str(val)+'%!\n')
         matches['html'] += ('<li><a href=\"mailto:'+key+'\" target=\"_top\">'+list(df.loc[df['Email Address'] == key]['Name'])[0]+'</a>: '+str(val)+'%!</li>')
     text = text_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['text'])
-    html = html_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['html'])
+    html = html_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['html'], CONTACT=holder)
     #Attatch and Send
     msg = MIMEMultipart('alternative')
     msg['From']=EMAIL

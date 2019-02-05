@@ -1,10 +1,13 @@
 #Developed by Trey Walker for The Butterknife 
-import smtplib
-from string import Template
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import smtplib #For Mailing services
+from string import Template #Used for templating from an external file
+from email.mime.multipart import MIMEMultipart #Email Formatting
+from email.mime.text import MIMEText #Email Formatting
 EMAIL = 'woodwardmatchmaker@gmail.com'
 PASSWORD = ''
+POSMOD = {1: 'color:#EBC944;font-size:250%;font-weight:700;margin-left:0px;margin-right:40px;', 2: 'color:#9E9E9E;font-size:225%;font-weight:600;margin-left:0px;margin-right:40px;', 
+3: 'color:#6D4C41;font-size:200%;font-weight:575;margin-left:0px;margin-right:40px;', 
+4: 'opacity:0.9;font-size:155%;font-weight:475;margin-left:0px;margin-right:40px;', 5: 'opacity:0.9;font-size:155%;font-weight:450;margin-left:0px;margin-right:40px;'}
 smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
 
 def connectSMPT():
@@ -20,6 +23,17 @@ def disconnectSMPT():
     smtpObj.quit()
     print('Closed SMTP Connection')
 
+def simpleSocial(key, df):
+    social, output = [list(df.loc[df['Email Address'] == key]['Snapchat Username'])[0], list(df.loc[df['Email Address'] == key]['Instagram Username'])[0]], ''
+    if social[0] != '':
+        output += ('Snapchat Username<b>:</b> '+social[0])
+        if social[1] != '':
+            output += ('<br>Instagram Username<b>:</b> '+social[1])
+            return(output)
+    elif social[1] != '':
+        output += ('Instagram Username<b>:</b> '+social[1])
+    return(output)
+
 def read_template(filename):
     with open(filename, 'r', encoding='utf-8') as template_file:
         template_file_content = template_file.read()
@@ -32,12 +46,13 @@ def sendResult(p1, df):
     counter, matches = 0, {'text' : '', 'html': ''}
     for key, val in p1['Best'].items():
         counter += 1
-        if counter == 1:
-            holder = list(df.loc[df['Email Address'] == key]['Snapchat and/or Instagram'])[0]
+        social = simpleSocial(key, df)
         matches['text'] += (str(counter)+'. '+df.loc[df['Email Address'] == key]['Name']+': '+str(val)+'%!\n')
-        matches['html'] += ('<li><a href=\"mailto:'+key+'\" target=\"_top\">'+list(df.loc[df['Email Address'] == key]['Name'])[0]+'</a>: '+str(val)+'%!</li>')
+        matches['html'] += ('<li style=\"'+POSMOD[counter]+'\"><a href=\"mailto:'+key+'\" target=\"_top\" style=\"color: inherit;\">'+list(df.loc[df['Email Address'] == key]['Name'])[0]+'</a>: '+str(val)+'%!</li>')
+        if social != '':
+            matches['html'] += ('<dt style=\"opacity: 0.8;font-size: 90%;font-weight:425;margin-left:0px;margin-right:40px;\">'+social+'</dt>')
     text = text_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['text'])
-    html = html_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['html'], CONTACT=holder)
+    html = html_template.substitute(PERSON_NAME=name, BEST_MATCHES=matches['html'])
     #Attatch and Send
     msg = MIMEMultipart('alternative')
     msg['From']=EMAIL

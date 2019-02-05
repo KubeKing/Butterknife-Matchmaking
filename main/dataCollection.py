@@ -9,7 +9,7 @@ import requests #For HTTP Usage
 import os #For Local File Usage
 
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
-CLIENT_SECRET_FILE = 'Butterknife-Matchmaking\main\client_secret.json' #Goto Google's API Dev
+CLIENT_SECRET_FILE = 'main\client_secret.json' #Goto Google's API Dev
 APPLICATION_NAME = 'Matchmaker' #Name of Application
 
 def get_credentials():

@@ -28,12 +28,9 @@ def get_credentials():
         credentials = tools.run_flow(flow, store)
         print('Storing credentials to ' + credential_path)
     return credentials
-
+ 
 def getSheet(range):
-    #Scrapes information off of the quanatiative
-    global mainList
-    mainList = []
-
+    print("Collecting "+range+"... ", end="", flush=True)
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
@@ -47,9 +44,10 @@ def getSheet(range):
     values = result.get('values', [])
 
     if not values:
-        print('No data found.')
+        print('FAILED!')
         return(False)
     else:
+        print('DONE!')
         return(values)
 
 

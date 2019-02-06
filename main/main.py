@@ -3,6 +3,7 @@
 import dataCollection as data #Collects data via the google spread sheet attatched to the form
 import sendResults as mail #Contains functions involving dissimination
 import pandas as pd #Module used for data management
+import jsonCollection
 import operator
 
 QT = {
@@ -13,12 +14,13 @@ questions = data.getSheet('B1:AD1')[0] #Creates an array of all the questions
 answers = data.getSheet('B2:AD') #Creates an arry of everyone's answers
 qlen = len(questions) #Finds # of questions
 alen = len(answers) #Finds the # of people who responded
+print("Creating Dataframe... ", end="", flush=True)
 df = pd.DataFrame(answers,columns=questions) #Creates a Table
 df.set_index(['Email Address']) #Sets the indentifier to email (Chosen because there can not be duplicate emails)
 for i in range(alen): #Converts multiple choice questions into arrays
     df.loc[i][QT['GI']] = df.loc[i][QT['GI']].split(', ')
     df.loc[i][QT['AR']] = df.loc[i][QT['AR']].split(', ')
-
+print('DONE!')
 #------------------------------------------------------Functions----------------------------------
 def canMatch(p1, p2): #Checks Genders and Grades
     if p1['Gender'] in p2[QT['GI']] and p2['Gender'] in p1[QT['GI']] and p1['Grade'] in p2[QT['AR']] and p2['Grade'] in p1[QT['AR']]:
@@ -44,6 +46,7 @@ def bestMatches(p1): #Finds the top 5 matches
     return(add)
 
 def createMatches(): #Finds all matches 
+    print("Finding Similarities... ", end="", flush=True)
     df['All'], df['Best'] = [None]*(alen), [None]*(alen)
     for i in range(alen):
         add = {}
@@ -52,15 +55,24 @@ def createMatches(): #Finds all matches
                 add[df.loc[n]['Email Address']] = similarity(df.loc[n], df.loc[i])
         df.loc[i]['All'] = add
         df.loc[i]['Best'] = bestMatches(add)
+    print('DONE!')
 
 def sendResults(): #Sends Results via email
-    mail.connectSMPT() #Connects to SMPT Server 
-    for i in range(1):
-        mail.sendResult(df.loc[i], df) #Sets who the email is sent to and it's contents
+    mail.connectSMPT() #Connects to SMPT Server
+    jsonCollection.overwrite(list(df['Email Address']))
+    while len(jsonCollection.loadSent()) > 0:
+        counter, mailing_list = 0, jsonCollection.loadSent()
+        mlen = len(mailing_list)
+        for email in mailing_list:
+            counter += 1
+            mail.sendResult(df[df['Email Address'] == email], df) #Sets who the email is sent to and it's contents
+            print('Sending mail... '+str(int(round(counter/mlen, 0)))+'%', end="\r")
+        if len(list(df['Email Address'])) == len(jsonCollection.loadSent()):
+            print('Sending Mail... FAILED')
+            break
+    print('Sending Mail... DONE!')
     mail.disconnectSMPT() #Disconnects from SMPT Server
 
 if __name__ == '__main__': #Functions that run when the file is opened
     createMatches()
     sendResults()
-    #print(df.shape)
-    #print(df)

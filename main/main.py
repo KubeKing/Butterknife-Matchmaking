@@ -10,8 +10,8 @@ QT = {
 'GI': 'What gender are you interested in? (Check all boxes that apply)', 
 'AR': 'What age range are you interested in? (Check all boxes that apply)',
 'STARTER': 'What would you rather eat?'} #Encodes long questions
-questions = data.getSheet('B1:AD1')[0] #Creates an array of all the questions
-answers = data.getSheet('B2:AD') #Creates an arry of everyone's answers
+questions = data.getSheet('B1:AG1')[0] #Creates an array of all the questions
+answers = data.getSheet('B2:AG') #Creates an arry of everyone's answers
 qlen = len(questions) #Finds # of questions
 alen = len(answers) #Finds the # of people who responded
 print("Creating Dataframe... ", end="", flush=True)
@@ -59,16 +59,17 @@ def createMatches(): #Finds all matches
 
 def sendResults(): #Sends Results via email
     mail.connectSMPT() #Connects to SMPT Server
-    jsonCollection.overwrite(list(df['Email Address']))
+    if not jsonCollection.loadSent():
+        jsonCollection.overwrite(list(df['Email Address'])) #Comment out by default
     while len(jsonCollection.loadSent()) > 0:
         counter, mailing_list = 0, jsonCollection.loadSent()
         mlen = len(mailing_list)
         for email in mailing_list:
             counter += 1
             mail.sendResult(df[df['Email Address'] == email], df) #Sets who the email is sent to and it's contents
-            print('Sending mail... '+str(int(round(counter/mlen, 0)))+'%', end="\r")
-        if len(list(df['Email Address'])) == len(jsonCollection.loadSent()):
-            print('Sending Mail... FAILED')
+            print('Sending mail... '+str(int(round(counter/mlen, 0)))+'%', end="\r") #Usefull print statements
+        if mlen == len(jsonCollection.loadSent()): #Sees if the emails can not be sent
+            print('ERROR YOU HAVE '+str(len(jsonCollection.loadSent()))+' that can not be sent')
             break
     print('Sending Mail... DONE!')
     mail.disconnectSMPT() #Disconnects from SMPT Server

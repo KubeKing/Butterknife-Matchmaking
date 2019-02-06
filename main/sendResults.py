@@ -26,7 +26,7 @@ def disconnectSMPT():
     print('Closed SMTP Connection')
 
 def simpleSocial(key, df):
-    social, output = [list(df.loc[df['Email Address'] == key]['Snapchat Username'])[0], list(df.loc[df['Email Address'] == key]['Instagram Username'])[0]], ''
+    social, output = [list(df.loc[df['Email Address'] == key]['Snapchat Username (Optional)'])[0], list(df.loc[df['Email Address'] == key]['Instagram Username (Optional)'])[0]], ''
     if social[0] != '':
         output += ('Snapchat Username<b>:</b> '+social[0])
         if social[1] != '':
@@ -42,8 +42,8 @@ def read_template(filename):
     return Template(template_file_content)
 
 def sendResult(p1, df):
-    to, name = list(p1['Email Address'])[0], list(p1['Name'])[0]
     try:
+        to, name = list(p1['Email Address'])[0], list(p1['Name'])[0]
         text_template = read_template('main\\templates\messsage.txt')
         html_template = read_template('main\\templates\message.html')
         counter, matches = 0, {'text' : '', 'html': ''}

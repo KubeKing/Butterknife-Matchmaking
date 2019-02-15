@@ -106,3 +106,4 @@ venv.bak/
 #secret
 /main/client_secret.json
 /.vscode
+output.xlsx

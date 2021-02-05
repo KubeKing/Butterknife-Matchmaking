@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart #Email Formatting
 from email.mime.text import MIMEText #Email Formatting
 import time
 EMAIL = 'woodwardmatchmaker@gmail.com'
-PASSWORD = 'guxRdbp2GD3VN^p9'
+PASSWORD = ''
 POSMOD = {1: 'color:#EBC944;font-size:250%;font-weight:700;margin-left:0px;margin-right:40px;', 2: 'color:#9E9E9E;font-size:225%;font-weight:600;margin-left:0px;margin-right:40px;', 
 3: 'color:#6D4C41;font-size:200%;font-weight:575;margin-left:0px;margin-right:40px;', 
 4: 'opacity:0.9;font-size:155%;font-weight:475;margin-left:0px;margin-right:40px;', 5: 'opacity:0.9;font-size:155%;font-weight:450;margin-left:0px;margin-right:40px;'}

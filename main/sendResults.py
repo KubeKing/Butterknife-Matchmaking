@@ -6,12 +6,10 @@ from email.mime.multipart import MIMEMultipart #Email Formatting
 from email.mime.text import MIMEText #Email Formatting
 import time
 EMAIL = 'woodwardmatchmaker@gmail.com'
-PASSWORD = ''
+PASSWORD = 'guxRdbp2GD3VN^p9'
 POSMOD = {1: 'color:#EBC944;font-size:250%;font-weight:700;margin-left:0px;margin-right:40px;', 2: 'color:#9E9E9E;font-size:225%;font-weight:600;margin-left:0px;margin-right:40px;', 
 3: 'color:#6D4C41;font-size:200%;font-weight:575;margin-left:0px;margin-right:40px;', 
 4: 'opacity:0.9;font-size:155%;font-weight:475;margin-left:0px;margin-right:40px;', 5: 'opacity:0.9;font-size:155%;font-weight:450;margin-left:0px;margin-right:40px;'}
-global repeatEx
-repeatEx = 0
 smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
 
 def connectSMPT():
@@ -28,14 +26,16 @@ def disconnectSMPT():
 
 def simpleSocial(key, df):
     social, output = [list(df.loc[df['Email Address'] == key]['Snapchat Username (Optional)'])[0], list(df.loc[df['Email Address'] == key]['Instagram Username (Optional)'])[0]], ''
-    if social[0] != 'nan':
+    if type(social[0]) == str:
         output += ('Snapchat Username<b>:</b> '+str(social[0]))
-        if social[1] != 'nan':
+        if type(social[1]) == str:
             output += ('<br>Instagram Username<b>:</b> '+str(social[1]))
             return(output)
-    elif social[1] != 'nan':
+        else:
+            return(output)
+    elif type(social[1]) == str:
         output += ('Instagram Username<b>:</b> '+str(social[1]))
-    return(output)
+    return('')
 
 def read_template(filename):
     with open(filename, 'r', encoding='utf-8') as template_file:
@@ -61,7 +61,7 @@ def sendResult(p1, df):
         msg = MIMEMultipart('alternative')
         msg['From']=EMAIL
         msg['To']=to
-        msg['Subject']="[UPDATED] Your Match Results are here!"
+        msg['Subject']="Your Match Results are here!"
         msg.attach(MIMEText(text, 'plain'))
         msg.attach(MIMEText(html, 'html'))
         smtpObj.send_message(msg)

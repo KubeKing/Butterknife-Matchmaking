@@ -1,4 +1,4 @@
-#Developed by Trey Walker for The Butterknife   
+#Developed by Trey Walker for The Butterknife
 from __future__ import print_function #Google
 from apiclient import discovery #Google API
 from oauth2client import client #Google API
@@ -9,7 +9,7 @@ import requests #For HTTP Usage
 import os #For Local File Usage
 
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
-CLIENT_SECRET_FILE = 'main\client_secret.json' #Goto Google's API Dev
+CLIENT_SECRET_FILE = 'client_secret.json' #Goto Google's API Dev
 APPLICATION_NAME = 'Butterknife Matchmaking Survey' #Name of Application
 
 def get_credentials():
@@ -37,7 +37,7 @@ def getSheet(range):
                     'version=v4')
     service = discovery.build('sheets', 'v4', http=http, discoveryServiceUrl=discoveryUrl)
 
-    spreadsheetId = '1kAYCEN2Q-xS8boGmo0zLv8LbiHL_z9jgxtj_TpA1oP8' #Google Sheet ID
+    spreadsheetId = '1WVXeSRS6Q8D52LIlMPGg2O-jDL91_lXGsWQ0YNVMo3U' #Google Sheet ID
     rangeName = range #Range
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
